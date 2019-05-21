@@ -25,6 +25,7 @@
 import Foundation
 import PDFGenerator
 import WeScan
+import GoogleMobileVision
 
 class NCCreateFormUploadScanDocument: XLFormViewController, NCSelectDelegate {
     
