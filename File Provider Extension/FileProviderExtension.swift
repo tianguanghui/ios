@@ -209,7 +209,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         let pathComponents = url.pathComponents
         let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-            
+        
         guard let metadata = providerData.getTableMetadataFromItemIdentifier(identifier) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
@@ -242,6 +242,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
             if errorCode == 0 && account == metadata.account {
                 
+                completionHandler(nil)
+                
                 // remove Task
                 self.outstandingDownloadTasks.removeValue(forKey: url)
                 
@@ -254,20 +256,16 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 // Update DB Metadata
                 _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
                 
-                completionHandler(nil)
-                return
-                
             } else {
-                
-                // remove task
-                self.outstandingDownloadTasks.removeValue(forKey: url)
                 
                 if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
                     completionHandler(NSFileProviderError(.noSuchItem))
                 } else {
                     completionHandler(NSFileProviderError(.serverUnreachable))
                 }
-                return
+                
+                // remove task
+                self.outstandingDownloadTasks.removeValue(forKey: url)
             }
             
         })

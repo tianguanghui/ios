@@ -92,27 +92,29 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         if (!metadata.directory) {
             
             let fileIdentifier =  CCUtility.getDirectoryProviderStorageFileID(self.itemIdentifier.rawValue, fileNameView: metadata.fileNameView)!
-            var fileSize = 0 as Double
+            self.documentSize = 0
          
             do {
                 let attributes = try FileManager.default.attributesOfItem(atPath: fileIdentifier)
-                fileSize = attributes[FileAttributeKey.size] as! Double
+                let fileSize = attributes[FileAttributeKey.size] as! Double
+                self.documentSize = NSNumber(value:fileSize)
             } catch let error {
                 print("error: \(error)")
+            }
+           
+            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+            if tableLocalFile == nil {
+                self.isDownloaded = false
+                self.isMostRecentVersionDownloaded = false
+            } else {
+                self.isDownloaded = true
+                self.isMostRecentVersionDownloaded = true
             }
             
             // REVIEW //
             
             /*
-            // Download
-            if fileSize == 0 {
-                self.isDownloaded = false
-                self.isMostRecentVersionDownloaded = false
-            } else {
-                self.documentSize = NSNumber(value:fileSize)
-                self.isDownloaded = true
-                self.isMostRecentVersionDownloaded = true
-            }
+          
             
             // Upload
             if (metadata.session == k_upload_session_extension && metadata.status != k_metadataStatusUploadError) {
