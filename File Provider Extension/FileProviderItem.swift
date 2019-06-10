@@ -91,17 +91,8 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         // This is a file
         if (!metadata.directory) {
             
-            let fileIdentifier =  CCUtility.getDirectoryProviderStorageFileID(self.itemIdentifier.rawValue, fileNameView: metadata.fileNameView)!
-            self.documentSize = 0
+            self.documentSize = NSNumber(value: metadata.size)
          
-            do {
-                let attributes = try FileManager.default.attributesOfItem(atPath: fileIdentifier)
-                let fileSize = attributes[FileAttributeKey.size] as! Double
-                self.documentSize = NSNumber(value:fileSize)
-            } catch let error {
-                print("error: \(error)")
-            }
-           
             let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
             if tableLocalFile == nil {
                 self.isDownloaded = false
