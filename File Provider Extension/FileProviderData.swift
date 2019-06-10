@@ -60,30 +60,75 @@ class FileProviderData: NSObject {
     
     // MARK: - 
     
-    func setupActiveAccount() -> Bool {
+    func setupActiveAccount(domain: String?) -> Bool {
+        
+        var foundAccount: Bool = false
+        
+        if domain == nil {
+            return false
+        }
         
         if CCUtility.getDisableFilesApp() || NCBrandOptions.sharedInstance.disable_openin_file {
             return false
         }
         
-        guard let activeAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
+        let tableAccounts = NCManageDatabase.sharedInstance.getAllAccount()
+        if tableAccounts.count == 0 {
             return false
         }
         
-        if account == "" {
-            queueTradeSafe.sync(flags: .barrier) {
-                account = activeAccount.account
-                accountUser = activeAccount.user
-                accountUserID = activeAccount.userID
-                accountPassword = CCUtility.getPassword(activeAccount.account)
-                accountUrl = activeAccount.url
-                homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
+        for tableAccount in tableAccounts {
+            guard let url = NSURL(string: tableAccount.url) else {
+                continue
             }
-        } else if account != activeAccount.account {
-            assert(false, "change user")
+            guard let host = url.host else {
+                continue
+            }
+            let accountDomain =  tableAccount.displayName + " (" + host + ")"
+            if accountDomain == domain {
+                queueTradeSafe.sync(flags: .barrier) {
+                    account = tableAccount.account
+                    accountUser = tableAccount.user
+                    accountUserID = tableAccount.userID
+                    accountPassword = CCUtility.getPassword(tableAccount.account)
+                    accountUrl = tableAccount.url
+                    homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
+                }
+                foundAccount = true
+            }
         }
-                
-        return true
+        
+        return foundAccount
+    }
+    
+    func setupActiveAccount(itemIdentifier: NSFileProviderItemIdentifier) -> Bool {
+        
+        var foundAccount: Bool = false
+
+        guard let accountFromItemIdentifier = getAccountFromItemIdentifier(itemIdentifier) else {
+            return false
+        }
+        
+        let tableAccounts = NCManageDatabase.sharedInstance.getAllAccount()
+        if tableAccounts.count == 0 {
+            return false
+        }
+        
+        for tableAccount in tableAccounts {
+            if accountFromItemIdentifier == tableAccount.account {
+                queueTradeSafe.sync(flags: .barrier) {
+                    account = tableAccount.account
+                    accountUser = tableAccount.user
+                    accountUserID = tableAccount.userID
+                    accountPassword = CCUtility.getPassword(tableAccount.account)
+                    accountUrl = tableAccount.url
+                    homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
+                }
+                foundAccount = true
+            }
+        }
+        
+        return foundAccount
     }
     
     // MARK: -

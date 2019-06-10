@@ -68,9 +68,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         // Create directory File Provider Storage
         CCUtility.getDirectoryProviderStorage()
         
-        // Setup account
-        _ = providerData.setupActiveAccount()
-        
         // Upload Imnport Document
         self.uploadFileImportDocument()
     }
@@ -83,8 +80,17 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         // Check account
         if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
-            if providerData.setupActiveAccount() == false {
+            // Root
+            if containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer && self.domain?.identifier.rawValue == nil {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
+            } else if self.domain?.identifier.rawValue != nil {
+                if providerData.setupActiveAccount(domain: self.domain?.identifier.rawValue) == false {
+                    throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
+                }
+            } else {
+                if providerData.setupActiveAccount(itemIdentifier: containerItemIdentifier) == false {
+                    throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
+                }
             }
         }
 
@@ -204,12 +210,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         let pathComponents = url.pathComponents
         let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
             
-        // Check account
-        if providerData.setupActiveAccount() == false {
-            completionHandler(NSFileProviderError(.notAuthenticated))
-            return
-        }
-            
         guard let metadata = providerData.getTableMetadataFromItemIdentifier(identifier) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
@@ -238,9 +238,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        let task = OCNetworking.sharedManager().download(withAccount: providerData.account, fileNameServerUrl: metadata.serverUrl + "/" + metadata.fileName, fileNameLocalPath: url.path, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtensionDownload(), completion: { (account, lenght, etag, date, message, errorCode) in
+        let task = OCNetworking.sharedManager().download(withAccount: metadata.account, fileNameServerUrl: metadata.serverUrl + "/" + metadata.fileName, fileNameLocalPath: url.path, communication: OCNetworking.sharedManager()?.sharedOCCommunicationExtensionDownload(), completion: { (account, lenght, etag, date, message, errorCode) in
             
-            if errorCode == 0 && account == self.providerData.account {
+            if errorCode == 0 && account == metadata.account {
                 
                 // remove Task
                 self.outstandingDownloadTasks.removeValue(forKey: url)

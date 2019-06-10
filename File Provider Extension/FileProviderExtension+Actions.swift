@@ -27,12 +27,6 @@ extension FileProviderExtension {
 
     override func createDirectory(withName directoryName: String, inParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
-        // Check account
-        if providerData.setupActiveAccount() == false {
-            completionHandler(nil, NSFileProviderError(.notAuthenticated))
-            return
-        }
-        
         guard let tableDirectory = providerData.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
@@ -91,12 +85,6 @@ extension FileProviderExtension {
     
     override func deleteItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (Error?) -> Void) {
         
-        // Check account
-        if providerData.setupActiveAccount() == false {
-            completionHandler(NSFileProviderError(.notAuthenticated))
-            return
-        }
-        
         guard let metadata = self.providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
@@ -122,12 +110,6 @@ extension FileProviderExtension {
     
     override func reparentItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toParentItemWithIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, newName: String?, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
-        // Check account
-        if providerData.setupActiveAccount() == false {
-            completionHandler(nil, NSFileProviderError(.notAuthenticated))
-            return
-        }
-        
         guard let itemFrom = try? item(for: itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
@@ -149,9 +131,9 @@ extension FileProviderExtension {
         let serverUrlTo = tableDirectoryTo.serverUrl
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
         
-        OCNetworking.sharedManager().moveFileOrFolder(withAccount:  providerData.account, fileName: fileNameFrom, fileNameTo: fileNameTo, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager().moveFileOrFolder(withAccount:  metadataFrom.account, fileName: fileNameFrom, fileNameTo: fileNameTo, completion: { (account, message, errorCode) in
             
-            if errorCode == 0 && account == self.providerData.account {
+            if errorCode == 0 && account == metadataFrom.account {
                 
                 if metadataFrom.directory {
                     NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: account!)
@@ -184,18 +166,12 @@ extension FileProviderExtension {
     
     override func renameItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toName itemName: String, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
-        // Check account
-        if providerData.setupActiveAccount() == false {
-            completionHandler(nil, NSFileProviderError(.notAuthenticated))
-            return
-        }
-        
         guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
         
-        guard let directoryTable = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", providerData.account, metadata.serverUrl)) else {
+        guard let directoryTable = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -204,9 +180,9 @@ extension FileProviderExtension {
         let fileNamePathFrom = metadata.serverUrl + "/" + fileNameFrom
         let fileNamePathTo = metadata.serverUrl + "/" + itemName
         
-        OCNetworking.sharedManager().moveFileOrFolder(withAccount: providerData.account, fileName: fileNamePathFrom, fileNameTo: fileNamePathTo, completion: { (account, message, errorCode) in
+        OCNetworking.sharedManager().moveFileOrFolder(withAccount: metadata.account, fileName: fileNamePathFrom, fileNameTo: fileNamePathTo, completion: { (account, message, errorCode) in
             
-            if errorCode == 0 && account == self.providerData.account {
+            if errorCode == 0 && account == metadata.account {
                 
                 // Rename metadata
                 guard let metadata = NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: itemName, fileID: metadata.fileID) else {
@@ -251,12 +227,6 @@ extension FileProviderExtension {
     }
     
     override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        
-        // Check account
-        if providerData.setupActiveAccount() == false {
-            completionHandler(nil, NSFileProviderError(.notAuthenticated))
-            return
-        }
         
         guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
@@ -303,7 +273,7 @@ extension FileProviderExtension {
         }
         
         // Add, Remove (nil)
-        NCManageDatabase.sharedInstance.addTag(metadata.fileID, tagIOS: tagData, account: providerData.account)
+        NCManageDatabase.sharedInstance.addTag(metadata.fileID, tagIOS: tagData, account: metadata.account)
         
         guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
