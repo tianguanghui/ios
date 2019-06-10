@@ -101,6 +101,9 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 print("error: \(error)")
             }
             
+            // REVIEW //
+            
+            /*
             // Download
             if fileSize == 0 {
                 self.isDownloaded = false
@@ -119,6 +122,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 self.isUploading = true
                 self.isUploaded = false
             }
+            */
             
             // Error ?
             if metadata.sessionError != "" {

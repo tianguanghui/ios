@@ -381,6 +381,11 @@
     
     // Registered push notification
     [appDelegate pushNotification];
+    
+    // Register domain for File Profider Extension
+    if (@available(iOS 11, *)) {
+        [FileProviderDomain.sharedInstance registerDomain];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
