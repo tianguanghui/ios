@@ -215,6 +215,13 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
+        guard let parentItemIdentifier = self.providerData.getParentItemIdentifier(metadata: metadata) else {
+            completionHandler(NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
+        
         // Error ? reUpload when touch
         if metadata.status == k_metadataStatusUploadError && metadata.session == k_upload_session_extension {
             
