@@ -76,12 +76,8 @@ extension FileProviderExtension {
                 self.providerData.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
                 
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
-                
-                self.providerData.queueTradeSafe.sync(flags: .barrier) {
-                    self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                    self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                }
-                
+                self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+                self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
                 self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             }
         })
@@ -111,11 +107,8 @@ extension FileProviderExtension {
         // Register for bytesSent
         NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(item.itemIdentifier.rawValue)) { (error) in }
         
-        providerData.queueTradeSafe.sync(flags: .barrier) {
-            self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-            self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-        }
-        
+        self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+        self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
     }
     
@@ -133,11 +126,9 @@ extension FileProviderExtension {
         if errorCode == 0 {
             
             // Remove temp fileID
-            providerData.queueTradeSafe.sync(flags: .barrier) {
-                let itemIdentifier = NSFileProviderItemIdentifier(CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView, directory: false))
-                self.providerData.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
-                self.providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
-            }
+            let itemIdentifier = NSFileProviderItemIdentifier(CCUtility.createMetadataID(fromAccount: metadata.account, serverUrl: metadata.serverUrl, fileNameView: metadata.fileNameView, directory: false))
+            self.providerData.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
+            self.providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
             
             // Recreate ico
             CCGraphics.createNewImage(from: fileName, fileID: fileID, extension: NSString(string: fileName).pathExtension, filterGrayScale: false, typeFile: metadata.typeFile, writeImage: true)
@@ -148,11 +139,8 @@ extension FileProviderExtension {
             let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
             
             let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-
-            providerData.queueTradeSafe.sync(flags: .barrier) {
-                self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-            }
+            self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+            self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
             
             uploadFileImportDocument()
             
@@ -164,11 +152,8 @@ extension FileProviderExtension {
             let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
             
             let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-            
-            providerData.queueTradeSafe.sync(flags: .barrier) {
-                providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-            }
+            providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+            providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
         
         self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])

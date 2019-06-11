@@ -222,10 +222,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         /* TEST */
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
-        providerData.queueTradeSafe.sync(flags: .barrier) {
-            providerData.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-            providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-        }
+        providerData.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+        providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
         self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
         
         

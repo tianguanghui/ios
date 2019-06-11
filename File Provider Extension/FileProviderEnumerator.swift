@@ -204,55 +204,39 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         // Report the deleted items
         //
         if enumeratedItemIdentifier == .workingSet {
-            providerData.queueTradeSafe.sync() {
-                for (itemIdentifier, _) in providerData.fileProviderSignalDeleteWorkingSetItemIdentifier {
-                    itemsDelete.append(itemIdentifier)
-                }
+            for (itemIdentifier, _) in providerData.fileProviderSignalDeleteWorkingSetItemIdentifier {
+                itemsDelete.append(itemIdentifier)
             }
-            providerData.queueTradeSafe.sync(flags: .barrier) {
-                providerData.fileProviderSignalDeleteWorkingSetItemIdentifier.removeAll()
-            }
+            providerData.fileProviderSignalDeleteWorkingSetItemIdentifier.removeAll()
         } else {
-            providerData.queueTradeSafe.sync() {
-                for (itemIdentifier, _) in providerData.fileProviderSignalDeleteContainerItemIdentifier {
-                    itemsDelete.append(itemIdentifier)
-                }
+            for (itemIdentifier, _) in providerData.fileProviderSignalDeleteContainerItemIdentifier {
+                itemsDelete.append(itemIdentifier)
             }
-            providerData.queueTradeSafe.sync(flags: .barrier) {
-                providerData.fileProviderSignalDeleteContainerItemIdentifier.removeAll()
-            }
+            providerData.fileProviderSignalDeleteContainerItemIdentifier.removeAll()
         }
             
         // Report the updated items
         //
         if enumeratedItemIdentifier == .workingSet {
-            providerData.queueTradeSafe.sync() {
-                for (itemIdentifier, item) in providerData.fileProviderSignalUpdateWorkingSetItem {
-                    let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
-                    if account != nil && account == providerData.account {
-                        itemsUpdate.append(item)
-                    } else {
-                        itemsDelete.append(itemIdentifier)
-                    }
+            for (itemIdentifier, item) in providerData.fileProviderSignalUpdateWorkingSetItem {
+                let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
+                if account != nil && account == providerData.account {
+                    itemsUpdate.append(item)
+                } else {
+                    itemsDelete.append(itemIdentifier)
                 }
             }
-            providerData.queueTradeSafe.sync(flags: .barrier) {
-                providerData.fileProviderSignalUpdateWorkingSetItem.removeAll()
-            }
+            providerData.fileProviderSignalUpdateWorkingSetItem.removeAll()
         } else {
-            providerData.queueTradeSafe.sync(flags: .barrier) {
-                for (itemIdentifier, item) in providerData.fileProviderSignalUpdateContainerItem {
-                    let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
-                    if account != nil && account == providerData.account {
-                        itemsUpdate.append(item)
-                    } else {
-                        itemsDelete.append(itemIdentifier)
-                    }
+            for (itemIdentifier, item) in providerData.fileProviderSignalUpdateContainerItem {
+                let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
+                if account != nil && account == providerData.account {
+                    itemsUpdate.append(item)
+                } else {
+                    itemsDelete.append(itemIdentifier)
                 }
             }
-            providerData.queueTradeSafe.sync(flags: .barrier) {
-                providerData.fileProviderSignalUpdateContainerItem.removeAll()
-            }
+            providerData.fileProviderSignalUpdateContainerItem.removeAll()
         }
             
         observer.didDeleteItems(withIdentifiers: itemsDelete)

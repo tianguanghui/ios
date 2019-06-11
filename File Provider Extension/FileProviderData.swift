@@ -46,9 +46,6 @@ class FileProviderData: NSObject {
     // Rank favorite
     var listFavoriteIdentifierRank = [String:NSNumber]()
     
-    // Queue for trade-safe
-    let queueTradeSafe = DispatchQueue(label: "com.nextcloud.fileproviderextension.tradesafe", attributes: .concurrent)
-
     // Item for signalEnumerator
     var fileProviderSignalDeleteContainerItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
     var fileProviderSignalUpdateContainerItem = [NSFileProviderItemIdentifier:FileProviderItem]()
@@ -86,14 +83,13 @@ class FileProviderData: NSObject {
             }
             let accountDomain =  tableAccount.displayName + " (" + host + ")"
             if accountDomain == domain {
-                queueTradeSafe.sync(flags: .barrier) {
-                    account = tableAccount.account
-                    accountUser = tableAccount.user
-                    accountUserID = tableAccount.userID
-                    accountPassword = CCUtility.getPassword(tableAccount.account)
-                    accountUrl = tableAccount.url
-                    homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
-                }
+                account = tableAccount.account
+                accountUser = tableAccount.user
+                accountUserID = tableAccount.userID
+                accountPassword = CCUtility.getPassword(tableAccount.account)
+                accountUrl = tableAccount.url
+                homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
+                
                 foundAccount = true
             }
         }
@@ -116,14 +112,13 @@ class FileProviderData: NSObject {
         
         for tableAccount in tableAccounts {
             if accountFromItemIdentifier == tableAccount.account {
-                queueTradeSafe.sync(flags: .barrier) {
-                    account = tableAccount.account
-                    accountUser = tableAccount.user
-                    accountUserID = tableAccount.userID
-                    accountPassword = CCUtility.getPassword(tableAccount.account)
-                    accountUrl = tableAccount.url
-                    homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
-                }
+                account = tableAccount.account
+                accountUser = tableAccount.user
+                accountUserID = tableAccount.userID
+                accountPassword = CCUtility.getPassword(tableAccount.account)
+                accountUrl = tableAccount.url
+                homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(tableAccount.url)
+                
                 foundAccount = true
             }
         }
@@ -222,9 +217,7 @@ class FileProviderData: NSObject {
                 }
                 
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self)
-                queueTradeSafe.sync(flags: .barrier) {
-                    fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                }
+                fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
                 updateWorkingSet = true
             }
         }
@@ -239,9 +232,7 @@ class FileProviderData: NSObject {
                 }
                 
                 let itemIdentifier = getItemIdentifier(metadata: metadata)
-                queueTradeSafe.sync(flags: .barrier) {
-                    fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
-                }
+                fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
                 updateWorkingSet = true
             }
         }
