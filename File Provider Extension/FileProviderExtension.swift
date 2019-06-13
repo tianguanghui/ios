@@ -215,18 +215,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        guard let parentItemIdentifier = self.providerData.getParentItemIdentifier(metadata: metadata) else {
-            completionHandler(NSFileProviderError(.noSuchItem))
-            return
-        }
-        
-        /* TEST */
-        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
-        providerData.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-        providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-        self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
-        
-        
         // Error ? reUpload when touch
         if metadata.status == k_metadataStatusUploadError && metadata.session == k_upload_session_extension {
             
