@@ -93,20 +93,20 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             
             self.documentSize = NSNumber(value: metadata.size)
          
+           
             let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
             if tableLocalFile == nil {
                 self.isDownloaded = false
                 self.isMostRecentVersionDownloaded = false
             } else {
                 self.isDownloaded = true
-                self.isDownloading = false
                 self.isMostRecentVersionDownloaded = true
             }
             
-            // REVIEW //
-            
-            /*
-          
+            // Download
+            if (metadata.session == k_download_session_extension && metadata.status != k_metadataStatusDownloadError) {
+                self.isDownloading = true
+            }
             
             // Upload
             if (metadata.session == k_upload_session_extension && metadata.status != k_metadataStatusUploadError) {
@@ -116,7 +116,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 self.isUploading = true
                 self.isUploaded = false
             }
-            */
             
             // Error ?
             if metadata.sessionError != "" {
