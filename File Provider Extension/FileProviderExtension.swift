@@ -242,9 +242,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
             if errorCode == 0 && account == metadata.account {
                 
-                // remove Task
-                self.outstandingDownloadTasks.removeValue(forKey: url)
-                
                 // update DB Local
                 metadata.date = date! as NSDate
                 metadata.etag = etag!
@@ -253,6 +250,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 // Update DB Metadata
                 _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                
+                // remove Task
+                self.outstandingDownloadTasks.removeValue(forKey: url)
                 
                 completionHandler(nil)
                 
