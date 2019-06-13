@@ -99,6 +99,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 self.isMostRecentVersionDownloaded = false
             } else {
                 self.isDownloaded = true
+                self.isDownloading = false
                 self.isMostRecentVersionDownloaded = true
             }
             

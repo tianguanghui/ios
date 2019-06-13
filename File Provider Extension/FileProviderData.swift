@@ -81,7 +81,7 @@ class FileProviderData: NSObject {
             guard let host = url.host else {
                 continue
             }
-            let accountDomain =  tableAccount.displayName + " (" + host + ")"
+            let accountDomain =  tableAccount.userID + " (" + host + ")"
             if accountDomain == domain {
                 account = tableAccount.account
                 accountUser = tableAccount.user
