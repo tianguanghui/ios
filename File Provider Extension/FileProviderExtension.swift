@@ -142,7 +142,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 throw NSFileProviderError(.noSuchItem)
             }
             
-            guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, serverUrl: providerData.homeServerUrl) else {
+            guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: providerData.homeServerUrl) else {
                 throw NSFileProviderError(.noSuchItem)
             }
             

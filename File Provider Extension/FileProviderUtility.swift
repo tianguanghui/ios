@@ -57,10 +57,10 @@ class fileProviderUtility: NSObject {
         }
     }
     
-    func getParentItemIdentifier(metadata: tableMetadata, serverUrl: String) -> NSFileProviderItemIdentifier? {
+    func getParentItemIdentifier(metadata: tableMetadata, homeServerUrl: String) -> NSFileProviderItemIdentifier? {
         
         if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))  {
-            if directory.serverUrl == serverUrl {
+            if directory.serverUrl == homeServerUrl {
                 return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
             } else {
                 // get the metadata.FileID of parent Directory
@@ -74,13 +74,13 @@ class fileProviderUtility: NSObject {
         return nil
     }
     
-    func getTableDirectoryFromParentItemIdentifier(_ parentItemIdentifier: NSFileProviderItemIdentifier, account: String, serverUrl: String) -> tableDirectory? {
+    func getTableDirectoryFromParentItemIdentifier(_ parentItemIdentifier: NSFileProviderItemIdentifier, account: String, homeServerUrl: String) -> tableDirectory? {
         
         var predicate: NSPredicate
         
         if parentItemIdentifier == .rootContainer {
             
-            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", account, homeServerUrl)
             
         } else {
             

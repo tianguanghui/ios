@@ -90,7 +90,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             
             // create items
             for (_, metadata) in itemIdentifierMetadata {
-                let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, serverUrl: providerData.homeServerUrl)
+                let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: providerData.homeServerUrl)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
                     items.append(item)
@@ -292,7 +292,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     
                     fileProviderUtility.sharedInstance.createFileIdentifierOnFileSystem(metadata: metadata)
                     
-                    let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, serverUrl: providerData.homeServerUrl)
+                    let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: providerData.homeServerUrl)
                     if parentItemIdentifier != nil {
                         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
                         items.append(item)
