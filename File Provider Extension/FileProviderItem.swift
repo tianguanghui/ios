@@ -92,7 +92,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         if (!metadata.directory) {
             
             self.documentSize = NSNumber(value: metadata.size)
-         
            
             let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
             if tableLocalFile == nil {
