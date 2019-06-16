@@ -75,7 +75,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     var isDownload = false
     var isUpload = false
 
-    init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier, providerData: FileProviderData) {
+    init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
         
         self.parentItemIdentifier = parentItemIdentifier
         self.itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
@@ -125,11 +125,11 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         } else {
             
             // Favorite directory
-            let rank = providerData.listFavoriteIdentifierRank[metadata.fileID]
+            let rank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[metadata.fileID]
             if (rank == nil) {
                 favoriteRank = nil
             } else {
-                favoriteRank = providerData.listFavoriteIdentifierRank[metadata.fileID]
+                favoriteRank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[metadata.fileID]
             }
         }
         

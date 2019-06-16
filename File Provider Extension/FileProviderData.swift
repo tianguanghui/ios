@@ -21,12 +21,12 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import FileProvider
-
-class FileProviderData: NSObject {
-    
-    var fileManager = FileManager()
-    
+class fileProviderData: NSObject {
+    @objc static let sharedInstance: fileProviderData = {
+        let instance = fileProviderData()
+        return instance
+    }()
+        
     var account = ""
     var accountUser = ""
     var accountUserID = ""
@@ -146,7 +146,7 @@ class FileProviderData: NSObject {
                     continue
                 }
                 
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self)
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                 fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
                 updateWorkingSet = true
             }

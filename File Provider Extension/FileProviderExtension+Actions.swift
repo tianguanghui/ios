@@ -27,16 +27,16 @@ extension FileProviderExtension {
 
     override func createDirectory(withName directoryName: String, inParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
-        guard let tableDirectory = fileProviderUtility.sharedInstance.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: providerData.account, homeServerUrl: providerData.homeServerUrl) else {
+        guard let tableDirectory = fileProviderUtility.sharedInstance.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.sharedInstance.account, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
         
         let serverUrl = tableDirectory.serverUrl
         
-        OCNetworking.sharedManager().createFolder(withAccount: providerData.account, serverUrl: serverUrl, fileName: directoryName, completion: { (account, fileID, date, message, errorCode) in
+        OCNetworking.sharedManager().createFolder(withAccount: fileProviderData.sharedInstance.account, serverUrl: serverUrl, fileName: directoryName, completion: { (account, fileID, date, message, errorCode) in
             
-            if errorCode == 0 && account == self.providerData.account {
+            if errorCode == 0 && account == fileProviderData.sharedInstance.account {
                 
                 let metadata = tableMetadata()
                 
@@ -60,13 +60,13 @@ extension FileProviderExtension {
                     return
                 }
                 
-                let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadataDB, homeServerUrl: self.providerData.homeServerUrl)
+                let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadataDB, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl)
                 if parentItemIdentifier != nil {
                     
-                    let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier!, providerData: self.providerData)
-                    self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                    self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                    self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                    let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier!)
+                    fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+                    fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                    fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
                     
                     completionHandler(item, nil)
                     
@@ -86,7 +86,7 @@ extension FileProviderExtension {
             return
         }
             
-        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: providerData.homeServerUrl) else {
+        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
             completionHandler( NSFileProviderError(.noSuchItem))
             return
         }
@@ -94,9 +94,9 @@ extension FileProviderExtension {
         deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
        
         // return immediately
-        providerData.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
-        providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
-        self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+        fileProviderData.sharedInstance.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
+        fileProviderData.sharedInstance.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
+        fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
 
         completionHandler(nil)
     }
@@ -117,7 +117,7 @@ extension FileProviderExtension {
         let serverUrlFrom = metadataFrom.serverUrl
         let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
         
-        guard let tableDirectoryTo = fileProviderUtility.sharedInstance.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: providerData.account, homeServerUrl: providerData.homeServerUrl) else {
+        guard let tableDirectoryTo = fileProviderUtility.sharedInstance.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.sharedInstance.account, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -140,10 +140,10 @@ extension FileProviderExtension {
                     return
                 }
                 
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
-                self.providerData.fileProviderSignalUpdateContainerItem[itemIdentifier] = item
-                self.providerData.fileProviderSignalUpdateWorkingSetItem[itemIdentifier] = item
-                self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[itemIdentifier] = item
+                fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[itemIdentifier] = item
+                fileProviderData.sharedInstance.signalEnumerator(for: [parentItemIdentifier, .workingSet])
                 
                 completionHandler(item, nil)
                 
@@ -194,15 +194,15 @@ extension FileProviderExtension {
                     NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil)
                 }
                 
-                guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: self.providerData.homeServerUrl) else {
+                guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
                 
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
-                self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+                fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
                 
                 completionHandler(item, nil)
             } else {
@@ -218,26 +218,26 @@ extension FileProviderExtension {
             return
         }
         
-        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: providerData.homeServerUrl) else {
+        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
         
         var favorite = false
         if favoriteRank == nil {
-            providerData.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
+            fileProviderData.sharedInstance.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
         } else {
-            let rank = providerData.listFavoriteIdentifierRank[itemIdentifier.rawValue]
+            let rank = fileProviderData.sharedInstance.listFavoriteIdentifierRank[itemIdentifier.rawValue]
             if rank == nil {
-                providerData.listFavoriteIdentifierRank[itemIdentifier.rawValue] = favoriteRank
+                fileProviderData.sharedInstance.listFavoriteIdentifierRank[itemIdentifier.rawValue] = favoriteRank
             }
             favorite = true
         }
         
-        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-        providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-        providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-        providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+        fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+        fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+        fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
 
         completionHandler(item, nil)
         
@@ -256,15 +256,15 @@ extension FileProviderExtension {
         // Add, Remove (nil)
         NCManageDatabase.sharedInstance.addTag(metadata.fileID, tagIOS: tagData, account: metadata.account)
         
-        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: providerData.homeServerUrl) else {
+        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
         
-        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-        providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-        providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-        providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+        fileProviderData.sharedInstance.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+        fileProviderData.sharedInstance.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+        fileProviderData.sharedInstance.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         
         completionHandler(item, nil)
     }
@@ -276,12 +276,12 @@ extension FileProviderExtension {
             return
         }
         
-        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: providerData.homeServerUrl) else {
+        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
         
-        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
         item.lastUsedDate = lastUsedDate
 
         completionHandler(item, nil)
@@ -297,7 +297,7 @@ extension FileProviderExtension {
                 let metadata = tableMetadata()
                 var error: NSError?
             
-                guard let tableDirectory = fileProviderUtility.sharedInstance.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: self.providerData.account, homeServerUrl: self.providerData.homeServerUrl) else {
+                guard let tableDirectory = fileProviderUtility.sharedInstance.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.sharedInstance.account, homeServerUrl: fileProviderData.sharedInstance.homeServerUrl) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
@@ -311,7 +311,7 @@ extension FileProviderExtension {
             
                 // typefile directory ? (NOT PERMITTED)
                 do {
-                    let attributes = try self.providerData.fileManager.attributesOfItem(atPath: fileURL.path)
+                    let attributes = try fileProviderUtility.sharedInstance.fileManager.attributesOfItem(atPath: fileURL.path)
                     size = attributes[FileAttributeKey.size] as! Double
                     let typeFile = attributes[FileAttributeKey.type] as! FileAttributeType
                     if typeFile == FileAttributeType.typeDirectory {
@@ -323,8 +323,8 @@ extension FileProviderExtension {
                     return
                 }
             
-                let fileName = NCUtility.sharedInstance.createFileName(fileURL.lastPathComponent, serverUrl: tableDirectory.serverUrl, account: self.providerData.account)
-                let fileID = CCUtility.createMetadataID(fromAccount: self.providerData.account, serverUrl: tableDirectory.serverUrl, fileNameView: fileName, directory: false)!
+                let fileName = NCUtility.sharedInstance.createFileName(fileURL.lastPathComponent, serverUrl: tableDirectory.serverUrl, account: fileProviderData.sharedInstance.account)
+                let fileID = CCUtility.createMetadataID(fromAccount: fileProviderData.sharedInstance.account, serverUrl: tableDirectory.serverUrl, fileNameView: fileName, directory: false)!
             
                 self.fileCoordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { (url) in
                     _ = fileProviderUtility.sharedInstance.moveFile(url.path, toPath: CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileName))
@@ -335,7 +335,7 @@ extension FileProviderExtension {
                 // ---------------------------------------------------------------------------------
             
                 // Metadata TEMP
-                metadata.account = self.providerData.account
+                metadata.account = fileProviderData.sharedInstance.account
                 metadata.date = NSDate()
                 metadata.directory = false
                 metadata.etag = ""
@@ -360,7 +360,7 @@ extension FileProviderExtension {
                     return
                 }
                             
-                let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
+                let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier)
             
                 completionHandler(item, nil)
 
