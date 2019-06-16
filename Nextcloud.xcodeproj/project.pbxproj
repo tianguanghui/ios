@@ -54,6 +54,7 @@
 		F70022FE1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
 		F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
 		F7020FCE2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7020FCD2233D7F700B7297D /* NCCreateFormUploadVoiceNote.swift */; };
+		F7040FFA22B6850800921000 /* FileProviderUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7040FF922B6850700921000 /* FileProviderUtility.swift */; };
 		F7063DED2199E55F003F38DA /* SVGKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DEC2199E55F003F38DA /* SVGKit.framework */; };
 		F7063DEF2199E568003F38DA /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DEE2199E568003F38DA /* CocoaLumberjack.framework */; };
 		F7063DF12199E56F003F38DA /* CocoaLumberjackSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7063DF02199E56E003F38DA /* CocoaLumberjackSwift.framework */; };
@@ -700,6 +701,7 @@
 		F70211F91BAC56E9003FC03E /* CCCellMainTransfer.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMainTransfer.xib; sourceTree = "<group>"; };
 		F70211FA1BAC56E9003FC03E /* CCMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMain.h; sourceTree = "<group>"; };
 		F70211FB1BAC56E9003FC03E /* CCMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCMain.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		F7040FF922B6850700921000 /* FileProviderUtility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderUtility.swift; sourceTree = "<group>"; };
 		F7053E3C1C639DF500741EA5 /* CCUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUtility.h; sourceTree = "<group>"; };
 		F7053E3D1C639DF500741EA5 /* CCUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUtility.m; sourceTree = "<group>"; };
 		F7063DEC2199E55F003F38DA /* SVGKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SVGKit.framework; path = Carthage/Build/iOS/SVGKit.framework; sourceTree = "<group>"; };
@@ -2271,6 +2273,7 @@
 			isa = PBXGroup;
 			children = (
 				F74BD8BE22AE6EFA00F04B30 /* FileProviderDomain.swift */,
+				F7040FF922B6850700921000 /* FileProviderUtility.swift */,
 				F771E3F220E239A600AFB62D /* FileProviderData.swift */,
 				F771E3D620E2392D00AFB62D /* FileProviderEnumerator.swift */,
 				F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */,
@@ -3547,6 +3550,7 @@
 				F7434B5D20E241E800417916 /* CCUtility.m in Sources */,
 				F7434B5020E2409100417916 /* OCXMLParser.m in Sources */,
 				F7434B5220E2409900417916 /* OCXMLShareByLinkParser.m in Sources */,
+				F7040FFA22B6850800921000 /* FileProviderUtility.swift in Sources */,
 				F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */,
 				F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */,
 				F771E3F320E239A600AFB62D /* FileProviderData.swift in Sources */,

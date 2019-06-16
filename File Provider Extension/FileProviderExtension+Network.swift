@@ -98,7 +98,7 @@ extension FileProviderExtension {
             return
         }
         
-        guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, serverUrl: providerData.homeServerUrl) else {
             return
         }
         
@@ -118,7 +118,7 @@ extension FileProviderExtension {
             return
         }
         
-        guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+        guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, serverUrl: providerData.homeServerUrl) else {
             return
         }
         
@@ -179,15 +179,15 @@ extension FileProviderExtension {
         var itemIdentifierForUpload = itemIdentifier
         
         // Is itemIdentifier = fileName [Apple Works and ... ?]
-        if itemIdentifier.rawValue.contains(fileName) && providerData.fileExists(atPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue) {
+        if itemIdentifier.rawValue.contains(fileName) && fileProviderUtility.sharedInstance.fileExists(atPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue) {
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@ AND fileName == %@", providerData.account, itemIdentifier.rawValue, fileName)) else {
                 return
             }
-            itemIdentifierForUpload = providerData.getItemIdentifier(metadata: metadata)
-            _ = providerData.moveFile(CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue, toPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifierForUpload.rawValue)
+            itemIdentifierForUpload = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
+            _ = fileProviderUtility.sharedInstance.moveFile(CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue, toPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifierForUpload.rawValue)
         }
         
-        guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifierForUpload) else {
+        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(itemIdentifierForUpload) else {
             return
         }
         

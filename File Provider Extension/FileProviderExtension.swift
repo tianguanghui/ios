@@ -138,11 +138,11 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
         } else {
             
-            guard let metadata = providerData.getTableMetadataFromItemIdentifier(identifier) else {
+            guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
                 throw NSFileProviderError(.noSuchItem)
             }
             
-            guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+            guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, serverUrl: providerData.homeServerUrl) else {
                 throw NSFileProviderError(.noSuchItem)
             }
             
@@ -210,7 +210,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         let pathComponents = url.pathComponents
         let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
 
-        guard let metadata = providerData.getTableMetadataFromItemIdentifier(identifier) else {
+        guard let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(identifier) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }

@@ -39,7 +39,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             serverUrl = providerData.homeServerUrl
         } else {
                 
-            let metadata = providerData.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
+            let metadata = fileProviderUtility.sharedInstance.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
             if metadata != nil  {
                 if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata!.account, metadata!.serverUrl))  {
                     serverUrl = directorySource.serverUrl + "/" + metadata!.fileName
@@ -72,9 +72,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     continue
                 }
                 
-                providerData.createFileIdentifierOnFileSystem(metadata: metadata)
+                fileProviderUtility.sharedInstance.createFileIdentifierOnFileSystem(metadata: metadata)
                     
-                itemIdentifierMetadata[providerData.getItemIdentifier(metadata: metadata)] = metadata
+                itemIdentifierMetadata[fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)] = metadata
             }
             
             // ***** Favorite *****
@@ -85,12 +85,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     continue
                 }
                
-                itemIdentifierMetadata[ providerData.getItemIdentifier(metadata: metadata)] = metadata
+                itemIdentifierMetadata[fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)] = metadata
             }
             
             // create items
             for (_, metadata) in itemIdentifierMetadata {
-                let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
+                let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, serverUrl: providerData.homeServerUrl)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
                     items.append(item)
@@ -219,7 +219,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         //
         if enumeratedItemIdentifier == .workingSet {
             for (itemIdentifier, item) in providerData.fileProviderSignalUpdateWorkingSetItem {
-                let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
+                let account = fileProviderUtility.sharedInstance.getAccountFromItemIdentifier(itemIdentifier)
                 if account != nil && account == providerData.account {
                     itemsUpdate.append(item)
                 } else {
@@ -229,7 +229,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             providerData.fileProviderSignalUpdateWorkingSetItem.removeAll()
         } else {
             for (itemIdentifier, item) in providerData.fileProviderSignalUpdateContainerItem {
-                let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
+                let account = fileProviderUtility.sharedInstance.getAccountFromItemIdentifier(itemIdentifier)
                 if account != nil && account == providerData.account {
                     itemsUpdate.append(item)
                 } else {
@@ -290,9 +290,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 counter += 1
                 if (counter >= start && counter <= stop) {
                     
-                    providerData.createFileIdentifierOnFileSystem(metadata: metadata)
+                    fileProviderUtility.sharedInstance.createFileIdentifierOnFileSystem(metadata: metadata)
                     
-                    let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
+                    let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, serverUrl: providerData.homeServerUrl)
                     if parentItemIdentifier != nil {
                         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
                         items.append(item)

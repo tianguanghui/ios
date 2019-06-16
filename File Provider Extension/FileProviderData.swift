@@ -101,7 +101,7 @@ class FileProviderData: NSObject {
         
         var foundAccount: Bool = false
 
-        guard let accountFromItemIdentifier = getAccountFromItemIdentifier(itemIdentifier) else {
+        guard let accountFromItemIdentifier = fileProviderUtility.sharedInstance.getAccountFromItemIdentifier(itemIdentifier) else {
             return false
         }
         
@@ -128,76 +128,6 @@ class FileProviderData: NSObject {
     
     // MARK: -
     
-    func getAccountFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> String? {
-        
-        let fileID = itemIdentifier.rawValue
-        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID))?.account
-    }
-    
-    func getTableMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> tableMetadata? {
-        
-        let fileID = itemIdentifier.rawValue
-        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID))
-    }
-
-    func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier {
-        
-        return NSFileProviderItemIdentifier(metadata.fileID)
-    }
-    
-    func createFileIdentifierOnFileSystem(metadata: tableMetadata) {
-        
-        let itemIdentifier = getItemIdentifier(metadata: metadata)
-        
-        if metadata.directory {
-            CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue)
-        } else {
-            CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue, fileNameView: metadata.fileNameView)
-        }
-    }
-    
-    func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
-        
-        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl))  {
-            if directory.serverUrl == homeServerUrl {
-                return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
-            } else {
-                // get the metadata.FileID of parent Directory
-                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", directory.fileID))  {
-                    let identifier = getItemIdentifier(metadata: metadata)
-                    return identifier
-                }
-            }
-        }
-        
-        return nil
-    }
-    
-    func getTableDirectoryFromParentItemIdentifier(_ parentItemIdentifier: NSFileProviderItemIdentifier) -> tableDirectory? {
-        
-        var predicate: NSPredicate
-        
-        if parentItemIdentifier == .rootContainer {
-            
-            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", account, homeServerUrl)
-            
-        } else {
-            
-            guard let metadata = getTableMetadataFromItemIdentifier(parentItemIdentifier) else {
-                return nil
-            }
-            predicate = NSPredicate(format: "fileID == %@", metadata.fileID)
-        }
-        
-        guard let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: predicate) else {
-            return nil
-        }
-        
-        return directory
-    }
-    
-    // MARK: -
-    
     func updateFavoriteForWorkingSet() {
         
         var updateWorkingSet = false
@@ -212,7 +142,7 @@ class FileProviderData: NSObject {
                 guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", identifier)) else {
                     continue
                 }
-                guard let parentItemIdentifier = getParentItemIdentifier(metadata: metadata) else {
+                guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, serverUrl: homeServerUrl) else {
                     continue
                 }
                 
@@ -231,7 +161,7 @@ class FileProviderData: NSObject {
                     continue
                 }
                 
-                let itemIdentifier = getItemIdentifier(metadata: metadata)
+                let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
                 fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
                 updateWorkingSet = true
             }
@@ -258,72 +188,5 @@ class FileProviderData: NSObject {
                 }
             }
         }
-    }
-    
-    // MARK: -
-    
-    func copyFile(_ atPath: String, toPath: String) -> Error? {
-        
-        var errorResult: Error?
-        
-        if !fileManager.fileExists(atPath: atPath) {
-            return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
-        }
-        
-        do {
-            try fileManager.removeItem(atPath: toPath)
-        } catch let error {
-            print("error: \(error)")
-        }
-        do {
-            try fileManager.copyItem(atPath: atPath, toPath: toPath)
-        } catch let error {
-            errorResult = error
-        }
-        
-        return errorResult
-    }
-    
-    func moveFile(_ atPath: String, toPath: String) -> Error? {
-        
-        var errorResult: Error?
-        
-        if atPath == toPath {
-            return nil
-        }
-                
-        if !fileManager.fileExists(atPath: atPath) {
-            return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
-        }
-        
-        do {
-            try fileManager.removeItem(atPath: toPath)
-        } catch let error {
-            print("error: \(error)")
-        }
-        do {
-            try fileManager.moveItem(atPath: atPath, toPath: toPath)
-        } catch let error {
-            errorResult = error
-        }
-        
-        return errorResult
-    }
-    
-    func deleteFile(_ atPath: String) -> Error? {
-        
-        var errorResult: Error?
-        
-        do {
-            try fileManager.removeItem(atPath: atPath)
-        } catch let error {
-            errorResult = error
-        }
-        
-        return errorResult
-    }
-    
-    func fileExists(atPath: String) -> Bool {
-        return fileManager.fileExists(atPath: atPath)
     }
 }
