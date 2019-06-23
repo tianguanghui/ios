@@ -115,29 +115,29 @@
 #define k_permission_can_move                           @"V"
 
 // Session
-#define k_domain_session_queue                          @"com.xuelang.text.Crypto-Cloud"
+#define k_domain_session_queue                          @"com.xuelang.test.Crypto-Cloud"
 
-#define k_download_session                              @"com.xuelang.text.Crypto-Cloud.download.session"
-#define k_download_session_foreground                   @"com.xuelang.text.Crypto-Cloud.download.sessionforeground"
-#define k_download_session_wwan                         @"com.xuelang.text.Crypto-Cloud.download.sessionwwan"
-#define k_upload_session                                @"com.xuelang.text.Crypto-Cloud.upload.session"
-#define k_upload_session_foreground                     @"com.xuelang.text.Crypto-Cloud.upload.sessionforeground"
-#define k_upload_session_wwan                           @"com.xuelang.text.Crypto-Cloud.upload.sessionwwan"
+#define k_download_session                              @"com.xuelang.test.Crypto-Cloud.download.session"
+#define k_download_session_foreground                   @"com.xuelang.test.Crypto-Cloud.download.sessionforeground"
+#define k_download_session_wwan                         @"com.xuelang.test.Crypto-Cloud.download.sessionwwan"
+#define k_upload_session                                @"com.xuelang.test.Crypto-Cloud.upload.session"
+#define k_upload_session_foreground                     @"com.xuelang.test.Crypto-Cloud.upload.sessionforeground"
+#define k_upload_session_wwan                           @"com.xuelang.test.Crypto-Cloud.upload.sessionwwan"
 
 // Session Download Upload Extension
 #define k_download_session_extension                    @"com.nextcloud.download.session.extension"
 #define k_upload_session_extension                      @"com.nextcloud.upload.session.extension"
 
 // OperationQueue
-#define k_queue                                         @"com.xuelang.text.Crypto-Cloud.queue"
-#define k_download_queue                                @"com.xuelang.text.Crypto-Cloud.download.queue"
-#define k_download_queuewwan                            @"com.xuelang.text.Crypto-Cloud.download.queuewwan"
-#define k_upload_queue                                  @"com.xuelang.text.Crypto-Cloud.upload.queue"
-#define k_upload_queuewwan                              @"com.xuelang.text.Crypto-Cloud.upload.queuewwan"
+#define k_queue                                         @"com.xuelang.test.Crypto-Cloud.queue"
+#define k_download_queue                                @"com.xuelang.test.Crypto-Cloud.download.queue"
+#define k_download_queuewwan                            @"com.xuelang.test.Crypto-Cloud.download.queuewwan"
+#define k_upload_queue                                  @"com.xuelang.test.Crypto-Cloud.upload.queue"
+#define k_upload_queuewwan                              @"com.xuelang.test.Crypto-Cloud.upload.queuewwan"
 
 // Service Key Share
 #define k_serviceShareKeyChain                          @"Crypto Cloud"
-#define k_metadataKeyedUnarchiver                       @"com.xuelang.text.nextcloud.metadata"
+#define k_metadataKeyedUnarchiver                       @"com.xuelang.test.nextcloud.metadata"
 
 // TaskIdentifier
 #define k_taskIdentifierDone                            0
