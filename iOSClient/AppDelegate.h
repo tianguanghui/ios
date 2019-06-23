@@ -36,6 +36,7 @@
 #import "CCSettings.h"
 #import "CCFavorites.h"
 #import "CCTransfers.h"
+#import <FastScroll/FastScroll.h>
 
 @class CCLoginWeb;
 @class CCMore;

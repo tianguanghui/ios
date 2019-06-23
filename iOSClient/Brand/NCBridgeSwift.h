@@ -30,7 +30,7 @@
 //
 #if !defined(EXTENSION)
 
-    #import "Nextcloud-Swift.h"
+#import "Nextcloud-Swift.h"
 
 #endif
 
